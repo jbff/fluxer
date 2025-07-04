@@ -72,6 +72,8 @@ def main():
     parser.add_argument("--consonants", "-c", type=int, default=None, help="Exact number of consonants required")
     parser.add_argument("--pos", "-p", type=str, default=None, help="Part of speech: noun, verb, adjective, adverb")
     parser.add_argument("--double-letters", "-d", action="store_true", help="Require double letters in the word")
+    parser.add_argument("--no-paging", "-n", action="store_true", help="Disable paged output (show all results at once)")
+    parser.add_argument("--limit", "-m", type=int, default=None, help="Limit number of matches to display")
     args = parser.parse_args()
     ensure_words_corpus()
 
@@ -108,18 +110,34 @@ def main():
     yellow = YELLOW if supports_color() else ''
     reset = RESET if supports_color() else ''
     magenta = MAGENTA if supports_color() else ''
-    print(f"{magenta}{bold}Found {len(filtered)} matches:{reset}")
-    # Output 5 at a time, prompt for more
-    i = 0
-    while i < len(filtered):
-        for j in range(i, min(i+5, len(filtered))):
-            w, overlap = filtered[j]
+    
+    total_matches = len(filtered)
+    if args.limit is not None and total_matches > args.limit:
+        print(f"{magenta}{bold}Found {total_matches} matches, displaying {args.limit}:{reset}")
+    else:
+        print(f"{magenta}{bold}Found {total_matches} matches:{reset}")
+
+    # Apply limit if specified
+    if args.limit is not None:
+        filtered = filtered[:args.limit]
+
+    # Output logic based on paging preference
+    if args.no_paging:
+        # Show all results at once
+        for w, overlap in filtered:
             print(f"{bold}{color}{w.upper()}{reset} {yellow}(overlap: {overlap}){reset}")
-        i += 5
-        if i < len(filtered):
-            user_input = input("Press Enter for more, or 'q' to quit: ")
-            if user_input.strip().lower() == 'q':
-                break
+    else:
+        # Output 5 at a time, prompt for more
+        i = 0
+        while i < len(filtered):
+            for j in range(i, min(i+5, len(filtered))):
+                w, overlap = filtered[j]
+                print(f"{bold}{color}{w.upper()}{reset} {yellow}(overlap: {overlap}){reset}")
+            i += 5
+            if i < len(filtered):
+                user_input = input("Press Enter for more, or 'q' to quit: ")
+                if user_input.strip().lower() == 'q':
+                    break
 
 # Utility: Check if a word contains double letters
 
