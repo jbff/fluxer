@@ -54,6 +54,7 @@ python fluxer.py PREFIX [SUFFIX] [OPTIONS]
 - `--consonants, -c`: Exact number of consonants required
 - `--pos, -p`: Part of speech (noun, verb, adjective, adverb)
 - `--double-letters, -d`: Require double letters in the word
+- `--no-repeats, -r`: Require no repeated letters in the word
 - `--no-paging, -n`: Disable paged output (show all results at once)
 - `--limit, -m`: Limit number of matches to display
 
