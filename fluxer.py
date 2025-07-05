@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import nltk
 from nltk.corpus import words
@@ -72,6 +72,7 @@ def main():
     parser.add_argument("--consonants", "-c", type=int, default=None, help="Exact number of consonants required")
     parser.add_argument("--pos", "-p", type=str, default=None, help="Part of speech: noun, verb, adjective, adverb")
     parser.add_argument("--double-letters", "-d", action="store_true", help="Require double letters in the word")
+    parser.add_argument("--no-repeats", "-r", action="store_true", help="Require no repeated letters in the word")
     parser.add_argument("--no-paging", "-n", action="store_true", help="Disable paged output (show all results at once)")
     parser.add_argument("--limit", "-m", type=int, default=None, help="Limit number of matches to display")
     args = parser.parse_args()
@@ -92,6 +93,8 @@ def main():
             continue
         if args.double_letters and not has_double_letters(w):
             continue
+        if args.no_repeats and has_repeated_letters(w):
+            continue
         # Calculate and store total overlap
         if args.suffix:
             overlap = prefix_overlap(w, args.prefix) + suffix_overlap(w, args.suffix)
@@ -100,8 +103,8 @@ def main():
         filtered.append((w, overlap))
     clear_transient()
 
-    print_transient("Sorting responses by overlap...")
-    filtered.sort(key=lambda x: (-x[1], x[0]))
+    print_transient("Sorting responses by overlap, length, and alphabetically...")
+    filtered.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
     clear_transient()
 
     # Colorful header
@@ -146,6 +149,17 @@ def has_double_letters(word):
     for i in range(len(word) - 1):
         if word[i] == word[i + 1]:
             return True
+    return False
+
+# Utility: Check if a word contains any repeated letters
+
+def has_repeated_letters(word):
+    word = word.lower()
+    seen_letters = set()
+    for letter in word:
+        if letter in seen_letters:
+            return True
+        seen_letters.add(letter)
     return False
 
 # Utility: Get part of speech (POS) using nltk
