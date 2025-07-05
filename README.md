@@ -16,6 +16,7 @@ Fluxis is a word puzzle game where players must find words that share overlappin
   - Number of consonants
   - Part of speech (noun, verb, adjective, adverb)
   - Presence of double letters
+  - No repeated letters
 - Results sorted by overlap strength
 - Colorful terminal output with pagination
 
