@@ -73,6 +73,7 @@ def main():
     parser.add_argument("--pos", "-p", type=str, default=None, help="Part of speech: noun, verb, adjective, adverb")
     parser.add_argument("--double-letters", "-d", action="store_true", help="Require double letters in the word")
     parser.add_argument("--no-repeats", "-r", action="store_true", help="Require no repeated letters in the word")
+    parser.add_argument("--alternating", "-a", action="store_true", help="Require alternating vowel-consonant pattern")
     parser.add_argument("--no-paging", "-n", action="store_true", help="Disable paged output (show all results at once)")
     parser.add_argument("--limit", "-m", type=int, default=None, help="Limit number of matches to display")
     args = parser.parse_args()
@@ -94,6 +95,8 @@ def main():
         if args.double_letters and not has_double_letters(w):
             continue
         if args.no_repeats and has_repeated_letters(w):
+            continue
+        if args.alternating and not is_alternating_pattern(w):
             continue
         # Calculate and store total overlap
         if args.suffix:
@@ -213,6 +216,38 @@ def suffix_overlap(word, suffix):
             if i > max_overlap:
                 max_overlap = i
     return max_overlap
+
+# Utility: Check if a word contains alternating vowel-consonant pattern
+def is_alternating_pattern(word):
+    word = word.lower()
+    vowels = 'aeiou'
+    consonants = 'bcdfghjklmnpqrstvwxyz'
+    
+    # Handle edge cases
+    if len(word) <= 1:
+        return True
+    
+    # Determine if the word starts with vowel or consonant
+    is_vowel_start = word[0] in vowels
+    
+    # Check that each character alternates properly
+    for i in range(len(word)):
+        is_vowel = word[i] in vowels
+        is_consonant = word[i] in consonants
+        
+        # Skip non-alphabetic characters
+        if not is_vowel and not is_consonant:
+            continue
+            
+        # Check if this position should be vowel or consonant
+        should_be_vowel = (i % 2 == 0) if is_vowel_start else (i % 2 == 1)
+        
+        if should_be_vowel and not is_vowel:
+            return False
+        if not should_be_vowel and not is_consonant:
+            return False
+    
+    return True
 
 if __name__ == "__main__":
     main()

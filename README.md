@@ -17,6 +17,7 @@ Fluxis is a word puzzle game where players must find words that share overlappin
   - Part of speech (noun, verb, adjective, adverb)
   - Presence of double letters
   - No repeated letters
+  - Alternating vowel-consonant patterns
 - Results sorted by overlap strength
 - Colorful terminal output with pagination
 
@@ -55,6 +56,7 @@ python fluxer.py PREFIX [SUFFIX] [OPTIONS]
 - `--pos, -p`: Part of speech (noun, verb, adjective, adverb)
 - `--double-letters, -d`: Require double letters in the word
 - `--no-repeats, -r`: Require no repeated letters in the word
+- `--alternating, -a`: Require alternating vowel-consonant pattern
 - `--no-paging, -n`: Disable paged output (show all results at once)
 - `--limit, -m`: Limit number of matches to display
 
@@ -164,7 +166,20 @@ SECTISM (overlap: 2)
 SECTIST (overlap: 2)
 ```
 
-**9. Many results (common prefix "the" showing total match count):**
+**9. Alternating pattern option (words with alternating vowel-consonant pattern starting with "st"):**
+```bash
+python fluxer.py "st" --alternating --limit 5 --no-paging
+```
+```
+Found 858 matches, displaying 5:
+TITANOSILICATE (overlap: 1)
+TUBULORACEMOSE (overlap: 1)
+TALONAVICULAR (overlap: 1)
+TELEBAROMETER (overlap: 1)
+TELEMANOMETER (overlap: 1)
+```
+
+**10. Many results (common prefix "the" showing total match count):**
 ```bash
 python fluxer.py "the" --limit 10 --no-paging
 ```
