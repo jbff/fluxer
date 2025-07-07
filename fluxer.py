@@ -74,6 +74,7 @@ def main():
     parser.add_argument("--double-letters", "-d", action="store_true", help="Require double letters in the word")
     parser.add_argument("--no-repeats", "-r", action="store_true", help="Require no repeated letters in the word")
     parser.add_argument("--alternating", "-a", action="store_true", help="Require alternating vowel-consonant pattern")
+    parser.add_argument("--alphabetical", "-o", action="store_true", help="Require letters to be in alphabetical order")
     parser.add_argument("--no-paging", "-n", action="store_true", help="Disable paged output (show all results at once)")
     parser.add_argument("--limit", "-m", type=int, default=None, help="Limit number of matches to display")
     args = parser.parse_args()
@@ -97,6 +98,8 @@ def main():
         if args.no_repeats and has_repeated_letters(w):
             continue
         if args.alternating and not is_alternating_pattern(w):
+            continue
+        if args.alphabetical and not is_alphabetical_order(w):
             continue
         # Calculate and store total overlap
         if args.suffix:
@@ -248,6 +251,11 @@ def is_alternating_pattern(word):
             return False
     
     return True
+
+# Utility: Check if letters in a word are in alphabetical order
+def is_alphabetical_order(word):
+    word = word.lower()
+    return word == ''.join(sorted(word))
 
 if __name__ == "__main__":
     main()

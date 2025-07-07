@@ -18,6 +18,7 @@ Fluxis is a word puzzle game where players must find words that share overlappin
   - Presence of double letters
   - No repeated letters
   - Alternating vowel-consonant patterns
+  - Letters in alphabetical order
 - Results sorted by overlap strength
 - Colorful terminal output with pagination
 
@@ -57,6 +58,7 @@ python fluxer.py PREFIX [SUFFIX] [OPTIONS]
 - `--double-letters, -d`: Require double letters in the word
 - `--no-repeats, -r`: Require no repeated letters in the word
 - `--alternating, -a`: Require alternating vowel-consonant pattern
+- `--alphabetical, -o`: Require letters to be in alphabetical order
 - `--no-paging, -n`: Disable paged output (show all results at once)
 - `--limit, -m`: Limit number of matches to display
 
