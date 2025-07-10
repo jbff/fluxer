@@ -140,17 +140,16 @@ def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempt
                 step1_matches.append((word, overlap))
     
     step1_matches.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
-    step1_matches = step1_matches[:10]  # Limit to top 10 for performance
     
     if not step1_matches:
         print(f"No words found matching rule '{rules[0]}' with overlap to '{starting_word}'")
         return None
     
-    print(f"Found {len(step1_matches)} candidates for step 1")
+    print(f"Found {len(step1_matches)} candidates for step 1", end="", flush=True)
     
     # Step 2: For each step 1 word, find step 2 words
     for step1_word, step1_overlap in step1_matches:
-        print(f"\nTrying step 1 word: {step1_word.upper()} (overlap: {step1_overlap})")
+        print(".", end="", flush=True)
         
         step2_matches = []
         for word in fluxer.words:
@@ -160,16 +159,15 @@ def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempt
                     step2_matches.append((word, overlap))
         
         step2_matches.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
-        step2_matches = step2_matches[:5]  # Limit to top 5 for performance
         
         if not step2_matches:
             continue
         
-        print(f"  Found {len(step2_matches)} candidates for step 2")
+        print(f"\nFound {len(step2_matches)} candidates for step 2", end="", flush=True)
         
         # Step 3: For each step 2 word, find step 3 words that connect back to starting word
         for step2_word, step2_overlap in step2_matches:
-            print(f"  Trying step 2 word: {step2_word.upper()} (overlap: {step2_overlap})")
+            print(".", end="", flush=True)
             
             step3_matches = []
             for word in fluxer.words:
