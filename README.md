@@ -1,6 +1,6 @@
 # fluxer
 
-A Python script that assists with playing **Fluxis**, a word puzzle game from [The Atlantic Games](https://www.theatlantic.com/games/).
+A Python script that assists with playing **Fluxis**, a word puzzle game from [The Atlantic Games](https://www.theatlantic.com/games/). The word list used was obtained from [dolph/dictionary] at https://raw.githubusercontent.com/dolph/dictionary/refs/heads/master/popular.txt
 
 ## About Fluxis
 

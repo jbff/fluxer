@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
 import nltk
-from nltk.corpus import words
 import argparse
 import sys
 import time
+
+words = []
+corpus = "popular.txt"
 
 def find_matches(prefix, suffix=None, length=None):
     prefix = prefix.lower()
     if suffix is not None:
         suffix = suffix.lower()
-    word_set = set(w.lower() for w in words.words())
+    word_set = set(w.lower() for w in words)
     results = set()
     prefix_suffixes = [prefix[i:] for i in range(len(prefix))]  # all suffixes of prefix except empty
     prefix_suffixes.append(prefix)  # include full prefix
@@ -33,11 +35,15 @@ def find_matches(prefix, suffix=None, length=None):
     return sorted(results)
 
 def ensure_words_corpus():
-    import nltk
+    global words
+
     try:
-        nltk.data.find('corpora/words')
-    except LookupError:
-        nltk.download('words')
+        with open(corpus) as f:
+            words = [line.strip() for line in f]
+    except FileNotFoundError:
+        print(f"Error: Word list {corpus} was not found.")
+        sys.exit(1)
+
     try:
         nltk.data.find('taggers/averaged_perceptron_tagger_eng')
     except LookupError:
