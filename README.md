@@ -2,6 +2,17 @@
 
 A Python script that assists with playing **Fluxis**, a word puzzle game from [The Atlantic Games](https://www.theatlantic.com/games/). The word list used was obtained from [dolph/dictionary](https://raw.githubusercontent.com/dolph/dictionary/refs/heads/master/popular.txt).
 
+This repository includes two tools:
+- **`fluxer.py`**: The main script for finding individual word matches with various filters
+- **`fluxer_solver.py`**: An automated solver that finds complete 3-word solution paths for Fluxis puzzles
+
+The solver script uses `fluxer.py` internally and can automatically find solutions when given a starting word and three rules. You can also use `fluxer.py` separately to manually work through puzzles step by step.
+
+**Example solver usage:**
+```bash
+python fluxer_solver.py PERHAPS --rules noun,6-letters,double-letters
+```
+
 ## About Fluxis
 
 Fluxis is a word puzzle game where players must find words that share overlapping letters with given prefix and suffix patterns. This tool helps by finding all possible words that match the specified criteria.
