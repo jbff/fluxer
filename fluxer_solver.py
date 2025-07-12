@@ -114,8 +114,8 @@ def apply_filters(word: str, filters: Dict[str, Any], fluxer) -> bool:
     
     return True
 
-def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempts: int = 1000) -> Optional[List[str]]:
-    """Find a complete 3-word solution path"""
+def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempts: int = 1000) -> Optional[Tuple[List[str], int]]:
+    """Find a complete 3-word solution path with total overlap calculation"""
     # Parse all rules
     rule_filters = [parse_rule(rule) for rule in rules]
     
@@ -177,22 +177,23 @@ def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempt
                     # Check overlap with starting word (for the cycle)
                     overlap_start = fluxer.suffix_overlap(word, starting_word)
                     if overlap2 > 0 and overlap_start > 0:
-                        total_overlap = overlap2 + overlap_start
+                        # Calculate total overlap for the complete cycle
+                        total_overlap = step1_overlap + step2_overlap + overlap2 + overlap_start
                         step3_matches.append((word, total_overlap))
             
             step3_matches.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
             
             if step3_matches:
                 # Found a complete solution!
-                step3_word, step3_overlap = step3_matches[0]
+                step3_word, total_overlap = step3_matches[0]
                 solution = [starting_word, step1_word, step2_word, step3_word]
-                return solution
+                return (solution, total_overlap)
     
     print("\nNo complete solution found!")
     return None
 
-def print_solution(solution: List[str], rules: List[str]):
-    """Print the solution in a nice format"""
+def print_solution(solution: List[str], rules: List[str], total_overlap: int):
+    """Print the solution in a nice format with total overlap"""
     print("\n" + "="*60)
     print("SOLUTION FOUND!")
     print("="*60)
@@ -202,6 +203,7 @@ def print_solution(solution: List[str], rules: List[str]):
     
     print(f"\nComplete cycle:")
     print(f"{solution[0].upper()} → {solution[1].upper()} → {solution[2].upper()} → {solution[3].upper()}")
+    print(f"Total overlap: {total_overlap}")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -247,10 +249,11 @@ Available rules:
         sys.exit(1)
     
     # Find solution
-    solution = find_solution_path(args.starting_word, rule_list, fluxer, args.max_attempts)
+    result = find_solution_path(args.starting_word, rule_list, fluxer, args.max_attempts)
     
-    if solution:
-        print_solution(solution, rule_list)
+    if result:
+        solution, total_overlap = result
+        print_solution(solution, rule_list, total_overlap)
     else:
         print("\nNo solution found. Try different rules or starting word.")
         sys.exit(1)
