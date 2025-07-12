@@ -134,6 +134,7 @@ def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: 
         print(f"Searching for up to {max_solutions} solutions...")
     
     solutions = []
+    max_overlap = 0  # Track the maximum overlap found so far
     
     # Step 1: Find words that match the first rule and overlap with starting word
     step1_matches = []
@@ -183,7 +184,11 @@ def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: 
             for step3_word, total_overlap in step3_matches:
                 solution = [starting_word, step1_word, step2_word, step3_word]
                 solutions.append((solution, total_overlap))
-                print(f"\r{len(solutions)} solutions found                 ", end="", flush=True)
+                
+                # Update max overlap if this solution has a higher overlap
+                if total_overlap > max_overlap:
+                    max_overlap = total_overlap
+                print(f"\r{len(solutions)} solutions found (max overlap: {max_overlap})                 ", end="", flush=True)
 
                 # Check if we've reached the limit
                 if max_solutions is not None and len(solutions) >= max_solutions:
