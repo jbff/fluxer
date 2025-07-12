@@ -53,6 +53,8 @@ Results are ranked by total overlap strength and displayed with color coding for
 
 Please note that the word list used probably contains words that the Fluxis game does not consider valid, so the matches output by this script are not guaranteed to be accepted by Fluxis.
 
+In addition, the NLTK POS-tagger may not be perfect because it is tagging without sentence context. Words (e.g. "plant") that depending on usage may be a verb or a noun will only be tagged with a single part of speech, which may prevent some possible solutions from being found.
+
 ### Usage
 
 ```bash
