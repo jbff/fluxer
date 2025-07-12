@@ -114,24 +114,28 @@ def apply_filters(word: str, filters: Dict[str, Any], fluxer) -> bool:
     
     return True
 
-def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempts: int = 1000) -> Optional[Tuple[List[str], int]]:
-    """Find a complete 3-word solution path with total overlap calculation"""
+def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: Optional[int] = 5) -> List[Tuple[List[str], int]]:
+    """Find multiple complete 3-word solution paths with total overlap calculation"""
     # Parse all rules
     rule_filters = [parse_rule(rule) for rule in rules]
     
     if len(rule_filters) != 3:
         print(f"Error: Expected 3 rules, got {len(rules)}")
-        return None
+        return []
     
     # Ensure words are loaded
     fluxer.ensure_words_corpus()
     
     print(f"Starting word: {starting_word.upper()}")
     print(f"Rules: {', '.join(rules)}")
-    print("Searching for solution...")
+    if max_solutions is None:
+        print("Searching for ALL solutions...")
+    else:
+        print(f"Searching for up to {max_solutions} solutions...")
+    
+    solutions = []
     
     # Step 1: Find words that match the first rule and overlap with starting word
-    print(f"\nStep 1: Finding words matching rule '{rules[0]}'...")
     step1_matches = []
     for word in fluxer.words:
         if apply_filters(word, rule_filters[0], fluxer):
@@ -143,14 +147,10 @@ def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempt
     
     if not step1_matches:
         print(f"No words found matching rule '{rules[0]}' with overlap to '{starting_word}'")
-        return None
-    
-    print(f"Found {len(step1_matches)} candidates for step 1", end="", flush=True)
+        return []
     
     # Step 2: For each step 1 word, find step 2 words
     for step1_word, step1_overlap in step1_matches:
-        print(".", end="", flush=True)
-        
         step2_matches = []
         for word in fluxer.words:
             if apply_filters(word, rule_filters[1], fluxer):
@@ -163,12 +163,8 @@ def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempt
         if not step2_matches:
             continue
         
-        print(f"\nFound {len(step2_matches)} candidates for step 2", end="", flush=True)
-        
         # Step 3: For each step 2 word, find step 3 words that connect back to starting word
         for step2_word, step2_overlap in step2_matches:
-            print(".", end="", flush=True)
-            
             step3_matches = []
             for word in fluxer.words:
                 if apply_filters(word, rule_filters[2], fluxer):
@@ -183,27 +179,46 @@ def find_solution_path(starting_word: str, rules: List[str], fluxer, max_attempt
             
             step3_matches.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
             
-            if step3_matches:
-                # Found a complete solution!
-                step3_word, total_overlap = step3_matches[0]
+            # Add all valid solutions from this path
+            for step3_word, total_overlap in step3_matches:
                 solution = [starting_word, step1_word, step2_word, step3_word]
-                return (solution, total_overlap)
-    
-    print("\nNo complete solution found!")
-    return None
+                solutions.append((solution, total_overlap))
+                print(f"\r{len(solutions)} solutions found                 ", end="", flush=True)
 
-def print_solution(solution: List[str], rules: List[str], total_overlap: int):
-    """Print the solution in a nice format with total overlap"""
+                # Check if we've reached the limit
+                if max_solutions is not None and len(solutions) >= max_solutions:
+                    print(f"\nReached limit of {max_solutions} solutions!")
+                    return solutions
+    
+    print(f"\nSearch complete! Found {len(solutions)} solutions.")
+    return solutions
+
+def print_solutions(solutions: List[Tuple[List[str], int]], rules: List[str], max_print: Optional[int] = None):
+    """Print multiple solutions in a compact format, sorted by overlap"""
+    if not solutions:
+        print("\nNo solutions found!")
+        return
+    
     print("\n" + "="*60)
-    print("SOLUTION FOUND!")
+    if len(solutions) == 1:
+        print("SOLUTION FOUND!")
+    else:
+        print(f"FOUND {len(solutions)} SOLUTIONS!")
+    if max_print is not None and len(solutions) > max_print:
+        print(f"Showing top {max_print} solutions by overlap:")
     print("="*60)
     
-    for i, (word, rule) in enumerate(zip(solution[1:], rules), 1):
-        print(f"Step {i}: {word.upper()} (rule: {rule})")
+    # Sort solutions by total overlap (highest first)
+    solutions.sort(key=lambda x: x[1], reverse=True)
     
-    print(f"\nComplete cycle:")
-    print(f"{solution[0].upper()} → {solution[1].upper()} → {solution[2].upper()} → {solution[3].upper()}")
-    print(f"Total overlap: {total_overlap}")
+    # Limit the number of solutions to print
+    solutions_to_print = solutions[:max_print] if max_print is not None else solutions
+    
+    for i, (solution, total_overlap) in enumerate(solutions_to_print, 1):
+        print(f"{i:2d}. {solution[0].upper()} → {solution[1].upper()} → {solution[2].upper()} → {solution[3].upper()} (overlap: {total_overlap})")
+    
+    if max_print is not None and len(solutions) > max_print:
+        print(f"\n... and {len(solutions) - max_print} more solutions")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -212,8 +227,10 @@ def main():
         epilog="""
 Examples:
   python fluxer_solver.py PERHAPS --rules noun,6-letters,double-letters
-  python fluxer_solver.py START --rules verb,5-letters,no-repeats
-  python fluxer_solver.py HELLO --rules adjective,alternating,alphabetical
+  python fluxer_solver.py START --rules verb,5-letters,no-repeats --solutions 3
+  python fluxer_solver.py HELLO --rules adjective,alternating,alphabetical --all
+  python fluxer_solver.py WORD --rules noun,verb,adjective --solutions 100 --print 5
+  python fluxer_solver.py TEST --rules 6-letters,double-letters,no-repeats --all --print 10
 
 Available rules:
   - noun, verb, adjective/adj, adverb/adv
@@ -227,8 +244,12 @@ Available rules:
     parser.add_argument("starting_word", type=str, help="Starting word for the puzzle")
     parser.add_argument("--rules", "-r", type=str, required=True, 
                        help="Comma-separated list of 3 rules (e.g., 'noun,6-letters,double-letters')")
-    parser.add_argument("--max-attempts", "-m", type=int, default=1000,
-                       help="Maximum attempts to find solution (default: 1000)")
+    parser.add_argument("--solutions", "-s", type=int, default=5,
+                       help="Maximum number of solutions to find (default: 5, use --all for all solutions)")
+    parser.add_argument("--all", "-a", action="store_true",
+                       help="Find all possible solutions (overrides --solutions)")
+    parser.add_argument("--print", "-p", type=int,
+                       help="Maximum number of solutions to print (default: print all found solutions)")
     
     args = parser.parse_args()
     
@@ -240,6 +261,18 @@ Available rules:
         print("Rules should be comma-separated, e.g.: noun,6-letters,double-letters")
         sys.exit(1)
     
+    # Determine max solutions
+    if args.all:
+        max_solutions = None
+    else:
+        max_solutions = args.solutions
+    
+    # Determine max solutions to print
+    if args.print is not None:
+        max_print = args.print
+    else:
+        max_print = None  # Default: print all found solutions
+    
     # Import fluxer functions
     try:
         fluxer = import_fluxer_functions()
@@ -248,14 +281,13 @@ Available rules:
         print("Make sure fluxer.py is in the same directory as this script")
         sys.exit(1)
     
-    # Find solution
-    result = find_solution_path(args.starting_word, rule_list, fluxer, args.max_attempts)
+    # Find solutions
+    solutions = find_solutions(args.starting_word, rule_list, fluxer, max_solutions)
     
-    if result:
-        solution, total_overlap = result
-        print_solution(solution, rule_list, total_overlap)
+    if solutions:
+        print_solutions(solutions, rule_list, max_print)
     else:
-        print("\nNo solution found. Try different rules or starting word.")
+        print("\nNo solutions found. Try different rules or starting word.")
         sys.exit(1)
 
 if __name__ == "__main__":
