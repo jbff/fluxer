@@ -5,6 +5,22 @@ import sys
 from typing import List, Tuple, Optional, Dict, Any
 import importlib.util
 
+# ANSI color codes for colorful output
+class Colors:
+    HEADER = '\033[95m'
+    BLUE = '\033[94m'
+    CYAN = '\033[96m'
+    GREEN = '\033[92m'
+    YELLOW = '\033[93m'
+    RED = '\033[91m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+    END = '\033[0m'
+    MAGENTA = '\033[95m'
+    BRIGHT_GREEN = '\033[92m'
+    BRIGHT_YELLOW = '\033[93m'
+    BRIGHT_BLUE = '\033[94m'
+
 # Import functions from fluxer.py
 def import_fluxer_functions():
     """Import necessary functions from fluxer.py"""
@@ -126,12 +142,12 @@ def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: 
     # Ensure words are loaded
     fluxer.ensure_words_corpus()
     
-    print(f"Starting word: {starting_word.upper()}")
-    print(f"Rules: {', '.join(rules)}")
+    print(f"{Colors.BOLD}{Colors.CYAN}Starting word: {Colors.YELLOW}{starting_word.upper()}{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.CYAN}Rules: {Colors.GREEN}{', '.join(rules)}{Colors.END}")
     if max_solutions is None:
-        print("Searching for ALL solutions...")
+        print(f"{Colors.BOLD}{Colors.MAGENTA}Searching for ALL solutions...{Colors.END}")
     else:
-        print(f"Searching for up to {max_solutions} solutions...")
+        print(f"{Colors.BOLD}{Colors.MAGENTA}Searching for up to {Colors.YELLOW}{max_solutions}{Colors.MAGENTA} solutions...{Colors.END}")
     
     solutions = []
     max_overlap = 0  # Track the maximum overlap found so far
@@ -147,7 +163,7 @@ def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: 
     step1_matches.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
     
     if not step1_matches:
-        print(f"No words found matching rule '{rules[0]}' with overlap to '{starting_word}'")
+        print(f"{Colors.RED}No words found matching rule '{Colors.YELLOW}{rules[0]}{Colors.RED}' with overlap to '{Colors.YELLOW}{starting_word}{Colors.RED}'{Colors.END}")
         return []
     
     # Step 2: For each step 1 word, find step 2 words
@@ -188,30 +204,33 @@ def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: 
                 # Update max overlap if this solution has a higher overlap
                 if total_overlap > max_overlap:
                     max_overlap = total_overlap
-                print(f"\r{len(solutions)} solutions found (max overlap: {max_overlap})                 ", end="", flush=True)
+                    # Print the new best solution immediately
+                    print(f"\n{Colors.BOLD}{Colors.BRIGHT_GREEN}🎉 NEW BEST! 🎉{Colors.END}")
+                    print(f"{Colors.BOLD}{Colors.BRIGHT_GREEN}{solution[0].upper()} → {solution[1].upper()} → {solution[2].upper()} → {solution[3].upper()} {Colors.YELLOW}(overlap: {total_overlap}){Colors.END}")
+                print(f"\r{Colors.CYAN}{len(solutions)} solutions found {Colors.YELLOW}(max overlap: {max_overlap}){Colors.END}                 ", end="", flush=True)
 
                 # Check if we've reached the limit
                 if max_solutions is not None and len(solutions) >= max_solutions:
-                    print(f"\nReached limit of {max_solutions} solutions!")
+                    print(f"\n{Colors.BOLD}{Colors.YELLOW}🎯 Reached limit of {max_solutions} solutions!{Colors.END}")
                     return solutions
     
-    print(f"\nSearch complete! Found {len(solutions)} solutions.")
+    print(f"\n{Colors.BOLD}{Colors.GREEN}✅ Search complete! Found {Colors.YELLOW}{len(solutions)}{Colors.GREEN} solutions.{Colors.END}")
     return solutions
 
 def print_solutions(solutions: List[Tuple[List[str], int]], rules: List[str], max_print: Optional[int] = None):
     """Print multiple solutions in a compact format, sorted by overlap"""
     if not solutions:
-        print("\nNo solutions found!")
+        print(f"\n{Colors.BOLD}{Colors.RED}❌ No solutions found!{Colors.END}")
         return
     
-    print("\n" + "="*60)
+    print(f"\n{Colors.BOLD}{Colors.BLUE}{'='*60}{Colors.END}")
     if len(solutions) == 1:
-        print("SOLUTION FOUND!")
+        print(f"{Colors.BOLD}{Colors.BRIGHT_GREEN}🎯 SOLUTION FOUND! 🎯{Colors.END}")
     else:
-        print(f"FOUND {len(solutions)} SOLUTIONS!")
+        print(f"{Colors.BOLD}{Colors.BRIGHT_GREEN}🎯 FOUND {Colors.YELLOW}{len(solutions)}{Colors.BRIGHT_GREEN} SOLUTIONS! 🎯{Colors.END}")
     if max_print is not None and len(solutions) > max_print:
-        print(f"Showing top {max_print} solutions by overlap:")
-    print("="*60)
+        print(f"{Colors.CYAN}Showing top {Colors.YELLOW}{max_print}{Colors.CYAN} solutions by overlap:{Colors.END}")
+    print(f"{Colors.BOLD}{Colors.BLUE}{'='*60}{Colors.END}")
     
     # Sort solutions by total overlap (highest first)
     solutions.sort(key=lambda x: x[1], reverse=True)
@@ -220,10 +239,24 @@ def print_solutions(solutions: List[Tuple[List[str], int]], rules: List[str], ma
     solutions_to_print = solutions[:max_print] if max_print is not None else solutions
     
     for i, (solution, total_overlap) in enumerate(solutions_to_print, 1):
-        print(f"{i:2d}. {solution[0].upper()} → {solution[1].upper()} → {solution[2].upper()} → {solution[3].upper()} (overlap: {total_overlap})")
+        # Use different colors for different ranks
+        if i == 1:
+            rank_color = Colors.BRIGHT_GREEN
+            medal = "🥇"
+        elif i == 2:
+            rank_color = Colors.YELLOW
+            medal = "🥈"
+        elif i == 3:
+            rank_color = Colors.RED
+            medal = "🥉"
+        else:
+            rank_color = Colors.CYAN
+            medal = "  "
+        
+        print(f"{Colors.BOLD}{rank_color}{medal} {i:2d}. {solution[0].upper()} → {solution[1].upper()} → {solution[2].upper()} → {solution[3].upper()} {Colors.YELLOW}(overlap: {total_overlap}){Colors.END}")
     
     if max_print is not None and len(solutions) > max_print:
-        print(f"\n... and {len(solutions) - max_print} more solutions")
+        print(f"\n{Colors.CYAN}... and {Colors.YELLOW}{len(solutions) - max_print}{Colors.CYAN} more solutions{Colors.END}")
 
 def main():
     parser = argparse.ArgumentParser(
@@ -262,8 +295,8 @@ Available rules:
     rule_list = [rule.strip() for rule in args.rules.split(',')]
     
     if len(rule_list) != 3:
-        print(f"Error: Expected exactly 3 rules, got {len(rule_list)}")
-        print("Rules should be comma-separated, e.g.: noun,6-letters,double-letters")
+        print(f"{Colors.BOLD}{Colors.RED}❌ Error: Expected exactly 3 rules, got {Colors.YELLOW}{len(rule_list)}{Colors.RED}{Colors.END}")
+        print(f"{Colors.CYAN}Rules should be comma-separated, e.g.: {Colors.GREEN}noun,6-letters,double-letters{Colors.END}")
         sys.exit(1)
     
     # Determine max solutions
@@ -282,8 +315,8 @@ Available rules:
     try:
         fluxer = import_fluxer_functions()
     except Exception as e:
-        print(f"Error importing fluxer.py: {e}")
-        print("Make sure fluxer.py is in the same directory as this script")
+        print(f"{Colors.BOLD}{Colors.RED}❌ Error importing fluxer.py: {Colors.YELLOW}{e}{Colors.END}")
+        print(f"{Colors.CYAN}Make sure fluxer.py is in the same directory as this script{Colors.END}")
         sys.exit(1)
     
     # Find solutions
@@ -292,7 +325,7 @@ Available rules:
     if solutions:
         print_solutions(solutions, rule_list, max_print)
     else:
-        print("\nNo solutions found. Try different rules or starting word.")
+        print(f"\n{Colors.BOLD}{Colors.RED}❌ No solutions found. Try different rules or starting word.{Colors.END}")
         sys.exit(1)
 
 if __name__ == "__main__":
