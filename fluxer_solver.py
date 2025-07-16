@@ -149,16 +149,25 @@ def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: 
     else:
         print(f"{Colors.BOLD}{Colors.MAGENTA}Searching for up to {Colors.YELLOW}{max_solutions}{Colors.MAGENTA} solutions...{Colors.END}")
     
+    # Pre-filter words for each rule (only by rule criteria, not overlap)
+    print(f"{Colors.CYAN}Pre-filtering words for each rule...{Colors.END}")
+    words_rule1 = [word for word in fluxer.words if apply_filters(word, rule_filters[0], fluxer)]
+    words_rule2 = [word for word in fluxer.words if apply_filters(word, rule_filters[1], fluxer)]
+    words_rule3 = [word for word in fluxer.words if apply_filters(word, rule_filters[2], fluxer)]
+    
+    print(f"{Colors.GREEN}Rule 1 ({rules[0]}): {Colors.YELLOW}{len(words_rule1)}{Colors.GREEN} words{Colors.END}")
+    print(f"{Colors.GREEN}Rule 2 ({rules[1]}): {Colors.YELLOW}{len(words_rule2)}{Colors.GREEN} words{Colors.END}")
+    print(f"{Colors.GREEN}Rule 3 ({rules[2]}): {Colors.YELLOW}{len(words_rule3)}{Colors.GREEN} words{Colors.END}")
+    
     solutions = []
     max_overlap = 0  # Track the maximum overlap found so far
     
     # Step 1: Find words that match the first rule and overlap with starting word
     step1_matches = []
-    for word in fluxer.words:
-        if apply_filters(word, rule_filters[0], fluxer):
-            overlap = fluxer.prefix_overlap(word, starting_word)
-            if overlap > 0:
-                step1_matches.append((word, overlap))
+    for word in words_rule1:
+        overlap = fluxer.prefix_overlap(word, starting_word)
+        if overlap > 0:
+            step1_matches.append((word, overlap))
     
     step1_matches.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
     
@@ -169,11 +178,10 @@ def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: 
     # Step 2: For each step 1 word, find step 2 words
     for step1_word, step1_overlap in step1_matches:
         step2_matches = []
-        for word in fluxer.words:
-            if apply_filters(word, rule_filters[1], fluxer):
-                overlap = fluxer.prefix_overlap(word, step1_word)
-                if overlap > 0:
-                    step2_matches.append((word, overlap))
+        for word in words_rule2:
+            overlap = fluxer.prefix_overlap(word, step1_word)
+            if overlap > 0:
+                step2_matches.append((word, overlap))
         
         step2_matches.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
         
@@ -183,16 +191,15 @@ def find_solutions(starting_word: str, rules: List[str], fluxer, max_solutions: 
         # Step 3: For each step 2 word, find step 3 words that connect back to starting word
         for step2_word, step2_overlap in step2_matches:
             step3_matches = []
-            for word in fluxer.words:
-                if apply_filters(word, rule_filters[2], fluxer):
-                    # Check overlap with step 2 word
-                    overlap2 = fluxer.prefix_overlap(word, step2_word)
-                    # Check overlap with starting word (for the cycle)
-                    overlap_start = fluxer.suffix_overlap(word, starting_word)
-                    if overlap2 > 0 and overlap_start > 0:
-                        # Calculate total overlap for the complete cycle
-                        total_overlap = step1_overlap + step2_overlap + overlap2 + overlap_start
-                        step3_matches.append((word, total_overlap))
+            for word in words_rule3:
+                # Check overlap with step 2 word
+                overlap2 = fluxer.prefix_overlap(word, step2_word)
+                # Check overlap with starting word (for the cycle)
+                overlap_start = fluxer.suffix_overlap(word, starting_word)
+                if overlap2 > 0 and overlap_start > 0:
+                    # Calculate total overlap for the complete cycle
+                    total_overlap = step1_overlap + step2_overlap + overlap2 + overlap_start
+                    step3_matches.append((word, total_overlap))
             
             step3_matches.sort(key=lambda x: (-x[1], -len(x[0]), x[0]))
             
