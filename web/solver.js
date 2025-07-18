@@ -100,6 +100,187 @@ function setupEventListeners() {
             maxSolutionsInput.classList.remove('disabled');
         }
     });
+    
+    // Handle filter checkboxes for all three rules (mutually exclusive per rule)
+    for (let ruleNum = 1; ruleNum <= 3; ruleNum++) {
+        const checkboxes = [
+            document.getElementById(`length-checkbox${ruleNum}`),
+            document.getElementById(`vowels-checkbox${ruleNum}`),
+            document.getElementById(`consonants-checkbox${ruleNum}`),
+            document.getElementById(`pos-checkbox${ruleNum}`),
+            document.getElementById(`double-letters${ruleNum}`),
+            document.getElementById(`no-repeats${ruleNum}`),
+            document.getElementById(`alternating${ruleNum}`),
+            document.getElementById(`alphabetical${ruleNum}`)
+        ];
+        
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => handleSolverFilterCheckboxChange(e, ruleNum));
+        });
+    }
+    
+    // Initialize filter checkbox states
+    initializeSolverFilterCheckboxStates();
+    
+    // Initialize Part of Speech dropdown states
+    for (let ruleNum = 1; ruleNum <= 3; ruleNum++) {
+        const posCheckbox = document.getElementById(`pos-checkbox${ruleNum}`);
+        const posSelect = document.getElementById(`pos${ruleNum}`);
+        if (!posCheckbox.checked) {
+            addAnyOption(posSelect);
+        }
+    }
+}
+
+// Handle solver filter checkbox changes (mutually exclusive per rule)
+function handleSolverFilterCheckboxChange(e, ruleNumber) {
+    const checkedCheckbox = e.target;
+    const allCheckboxes = [
+        document.getElementById(`length-checkbox${ruleNumber}`),
+        document.getElementById(`vowels-checkbox${ruleNumber}`),
+        document.getElementById(`consonants-checkbox${ruleNumber}`),
+        document.getElementById(`pos-checkbox${ruleNumber}`),
+        document.getElementById(`double-letters${ruleNumber}`),
+        document.getElementById(`no-repeats${ruleNumber}`),
+        document.getElementById(`alternating${ruleNumber}`),
+        document.getElementById(`alphabetical${ruleNumber}`)
+    ];
+    
+    // Get all checkbox labels for this rule
+    const allLabels = allCheckboxes.map(checkbox => checkbox.parentElement);
+    
+    if (checkedCheckbox.checked) {
+        // Uncheck all other checkboxes and reset their labels
+        allCheckboxes.forEach((checkbox, index) => {
+            if (checkbox !== checkedCheckbox) {
+                checkbox.checked = false;
+                allLabels[index].classList.remove('checked');
+                allLabels[index].classList.add('disabled');
+            }
+        });
+        
+        // Reset inputs to defaults when switching between rule types
+        if (checkedCheckbox.id === `length-checkbox${ruleNumber}`) {
+            document.getElementById(`length${ruleNumber}`).value = '';
+            document.getElementById(`length${ruleNumber}`).disabled = false;
+            document.getElementById(`length${ruleNumber}`).classList.remove('disabled');
+        } else if (checkedCheckbox.id === `vowels-checkbox${ruleNumber}`) {
+            document.getElementById(`vowels${ruleNumber}`).value = '';
+            document.getElementById(`vowels${ruleNumber}`).disabled = false;
+            document.getElementById(`vowels${ruleNumber}`).classList.remove('disabled');
+        } else if (checkedCheckbox.id === `consonants-checkbox${ruleNumber}`) {
+            document.getElementById(`consonants${ruleNumber}`).value = '';
+            document.getElementById(`consonants${ruleNumber}`).disabled = false;
+            document.getElementById(`consonants${ruleNumber}`).classList.remove('disabled');
+        } else if (checkedCheckbox.id === `pos-checkbox${ruleNumber}`) {
+            const posSelect = document.getElementById(`pos${ruleNumber}`);
+            removeAnyOption(posSelect);
+            posSelect.value = 'noun'; // Default to first real option
+            posSelect.disabled = false;
+            posSelect.classList.remove('disabled');
+        }
+        
+        // Disable and reset all input fields for unchecked checkboxes
+        if (checkedCheckbox.id !== `length-checkbox${ruleNumber}`) {
+            document.getElementById(`length${ruleNumber}`).disabled = true;
+            document.getElementById(`length${ruleNumber}`).classList.add('disabled');
+            document.getElementById(`length${ruleNumber}`).value = '';
+        }
+        if (checkedCheckbox.id !== `vowels-checkbox${ruleNumber}`) {
+            document.getElementById(`vowels${ruleNumber}`).disabled = true;
+            document.getElementById(`vowels${ruleNumber}`).classList.add('disabled');
+            document.getElementById(`vowels${ruleNumber}`).value = '';
+        }
+        if (checkedCheckbox.id !== `consonants-checkbox${ruleNumber}`) {
+            document.getElementById(`consonants${ruleNumber}`).disabled = true;
+            document.getElementById(`consonants${ruleNumber}`).classList.add('disabled');
+            document.getElementById(`consonants${ruleNumber}`).value = '';
+        }
+        if (checkedCheckbox.id !== `pos-checkbox${ruleNumber}`) {
+            const posSelect = document.getElementById(`pos${ruleNumber}`);
+            posSelect.disabled = true;
+            posSelect.classList.add('disabled');
+            posSelect.value = '';
+            addAnyOption(posSelect);
+        }
+        
+        // Update label styling
+        checkedCheckbox.parentElement.classList.remove('disabled');
+        checkedCheckbox.parentElement.classList.add('checked');
+        
+    } else {
+        // If unchecking, disable the corresponding input field, reset its value, and update label
+        if (checkedCheckbox.id === `length-checkbox${ruleNumber}`) {
+            document.getElementById(`length${ruleNumber}`).disabled = true;
+            document.getElementById(`length${ruleNumber}`).classList.add('disabled');
+            document.getElementById(`length${ruleNumber}`).value = '';
+        } else if (checkedCheckbox.id === `vowels-checkbox${ruleNumber}`) {
+            document.getElementById(`vowels${ruleNumber}`).disabled = true;
+            document.getElementById(`vowels${ruleNumber}`).classList.add('disabled');
+            document.getElementById(`vowels${ruleNumber}`).value = '';
+        } else if (checkedCheckbox.id === `consonants-checkbox${ruleNumber}`) {
+            document.getElementById(`consonants${ruleNumber}`).disabled = true;
+            document.getElementById(`consonants${ruleNumber}`).classList.add('disabled');
+            document.getElementById(`consonants${ruleNumber}`).value = '';
+        } else if (checkedCheckbox.id === `pos-checkbox${ruleNumber}`) {
+            const posSelect = document.getElementById(`pos${ruleNumber}`);
+            posSelect.disabled = true;
+            posSelect.classList.add('disabled');
+            posSelect.value = '';
+            addAnyOption(posSelect);
+        }
+        
+        // Update label styling
+        checkedCheckbox.parentElement.classList.remove('checked');
+        checkedCheckbox.parentElement.classList.add('disabled');
+    }
+}
+
+// Helper functions for managing Part of Speech dropdown
+function addAnyOption(selectElement) {
+    // Check if "Any" option already exists
+    if (!selectElement.querySelector('option[value=""]')) {
+        const anyOption = document.createElement('option');
+        anyOption.value = '';
+        anyOption.textContent = 'Any';
+        selectElement.insertBefore(anyOption, selectElement.firstChild);
+    }
+}
+
+function removeAnyOption(selectElement) {
+    // Remove "Any" option if it exists
+    const anyOption = selectElement.querySelector('option[value=""]');
+    if (anyOption) {
+        anyOption.remove();
+    }
+}
+
+// Initialize solver filter checkbox states
+function initializeSolverFilterCheckboxStates() {
+    for (let ruleNum = 1; ruleNum <= 3; ruleNum++) {
+        const allCheckboxes = [
+            document.getElementById(`length-checkbox${ruleNum}`),
+            document.getElementById(`vowels-checkbox${ruleNum}`),
+            document.getElementById(`consonants-checkbox${ruleNum}`),
+            document.getElementById(`pos-checkbox${ruleNum}`),
+            document.getElementById(`double-letters${ruleNum}`),
+            document.getElementById(`no-repeats${ruleNum}`),
+            document.getElementById(`alternating${ruleNum}`),
+            document.getElementById(`alphabetical${ruleNum}`)
+        ];
+        
+        const allLabels = allCheckboxes.map(checkbox => checkbox.parentElement);
+        
+        allCheckboxes.forEach((checkbox, index) => {
+            if (checkbox.checked) {
+                allLabels[index].classList.add('checked');
+                allLabels[index].classList.remove('disabled');
+            } else {
+                allLabels[index].classList.remove('checked');
+                allLabels[index].classList.add('disabled');
+            }
+        });
+    }
 }
 
 // Main solve function
@@ -143,27 +324,35 @@ function collectRuleFromForm(ruleNumber) {
     const rule = {};
     
     // Length
-    const length = document.getElementById(`length${ruleNumber}`).value;
-    if (length) {
-        rule.length = parseInt(length);
+    if (document.getElementById(`length-checkbox${ruleNumber}`).checked) {
+        const length = document.getElementById(`length${ruleNumber}`).value;
+        if (length) {
+            rule.length = parseInt(length);
+        }
     }
     
     // Vowels
-    const vowels = document.getElementById(`vowels${ruleNumber}`).value;
-    if (vowels) {
-        rule.vowels = parseInt(vowels);
+    if (document.getElementById(`vowels-checkbox${ruleNumber}`).checked) {
+        const vowels = document.getElementById(`vowels${ruleNumber}`).value;
+        if (vowels) {
+            rule.vowels = parseInt(vowels);
+        }
     }
     
     // Consonants
-    const consonants = document.getElementById(`consonants${ruleNumber}`).value;
-    if (consonants) {
-        rule.consonants = parseInt(consonants);
+    if (document.getElementById(`consonants-checkbox${ruleNumber}`).checked) {
+        const consonants = document.getElementById(`consonants${ruleNumber}`).value;
+        if (consonants) {
+            rule.consonants = parseInt(consonants);
+        }
     }
     
     // Part of Speech
-    const pos = document.getElementById(`pos${ruleNumber}`).value;
-    if (pos) {
-        rule.pos = pos;
+    if (document.getElementById(`pos-checkbox${ruleNumber}`).checked) {
+        const pos = document.getElementById(`pos${ruleNumber}`).value;
+        if (pos) {
+            rule.pos = pos;
+        }
     }
     
     // Checkboxes

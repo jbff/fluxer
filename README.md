@@ -46,6 +46,8 @@ Fluxis is a word puzzle game where players must find words that share overlappin
 
 **Note**: The main scripts (`fluxer.py` and `fluxer_solver.py`) do not require NLTK. They use pre-tagged word lists for part-of-speech filtering, which provides faster performance and more accurate results.
 
+**Note**: The part of speech tagging is imperfect since it is tagging words with no semantic context. So words that can act as more than one part of speech are only getting categorized into one part of speech list.
+
 ## Pre-tagged Word Lists
 
 The scripts use pre-tagged word lists for part-of-speech filtering:

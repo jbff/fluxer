@@ -39,23 +39,39 @@
                 
                 <div class="filters-grid">
                     <div class="filter-group">
-                        <label for="length" class="filter-label">Word Length</label>
-                        <input type="number" id="length" class="filter-input" placeholder="Any length" min="1" max="20">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="length-checkbox" class="checkbox">
+                            <span class="checkmark"></span>
+                            Word Length
+                        </label>
+                        <input type="number" id="length" class="filter-input" placeholder="Any length" min="1" max="20" disabled>
                     </div>
 
                     <div class="filter-group">
-                        <label for="vowels" class="filter-label">Vowels</label>
-                        <input type="number" id="vowels" class="filter-input" placeholder="Any" min="0" max="10">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="vowels-checkbox" class="checkbox">
+                            <span class="checkmark"></span>
+                            Vowels
+                        </label>
+                        <input type="number" id="vowels" class="filter-input" placeholder="Any" min="0" max="10" disabled>
                     </div>
 
                     <div class="filter-group">
-                        <label for="consonants" class="filter-label">Consonants</label>
-                        <input type="number" id="consonants" class="filter-input" placeholder="Any" min="0" max="20">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="consonants-checkbox" class="checkbox">
+                            <span class="checkmark"></span>
+                            Consonants
+                        </label>
+                        <input type="number" id="consonants" class="filter-input" placeholder="Any" min="0" max="20" disabled>
                     </div>
 
                     <div class="filter-group">
-                        <label for="pos" class="filter-label">Part of Speech</label>
-                        <select id="pos" class="filter-select">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="pos-checkbox" class="checkbox">
+                            <span class="checkmark"></span>
+                            Part of Speech
+                        </label>
+                        <select id="pos" class="filter-select" disabled>
                             <option value="">Any</option>
                             <option value="noun">Noun</option>
                             <option value="verb">Verb</option>

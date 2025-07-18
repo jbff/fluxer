@@ -185,6 +185,18 @@ body {
     font-size: 0.9rem;
     position: relative;
     padding-left: 35px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-label.disabled {
+    color: #9ca3af;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.checkbox-label.checked {
+    color: #667eea;
+    font-weight: 600;
 }
 
 .checkbox {

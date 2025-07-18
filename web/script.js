@@ -8,9 +8,13 @@ let adverbs = [];
 // DOM elements
 const prefixInput = document.getElementById('prefix');
 const suffixInput = document.getElementById('suffix');
+const lengthCheckbox = document.getElementById('length-checkbox');
 const lengthInput = document.getElementById('length');
+const vowelsCheckbox = document.getElementById('vowels-checkbox');
 const vowelsInput = document.getElementById('vowels');
+const consonantsCheckbox = document.getElementById('consonants-checkbox');
 const consonantsInput = document.getElementById('consonants');
+const posCheckbox = document.getElementById('pos-checkbox');
 const posSelect = document.getElementById('pos');
 const doubleLettersCheckbox = document.getElementById('double-letters');
 const noRepeatsCheckbox = document.getElementById('no-repeats');
@@ -112,11 +116,169 @@ function setupEventListeners() {
         }
     });
     
+    // Handle filter checkboxes (mutually exclusive)
+    [lengthCheckbox, vowelsCheckbox, consonantsCheckbox, posCheckbox, doubleLettersCheckbox, noRepeatsCheckbox, alternatingCheckbox, alphabeticalCheckbox].forEach(checkbox => {
+        checkbox.addEventListener('change', handleFilterCheckboxChange);
+    });
+    
     // Initialize the disabled state based on the checkbox's initial state
     limitInput.disabled = noPagingCheckbox.checked;
     if (noPagingCheckbox.checked) {
         limitInput.classList.add('disabled');
     }
+    
+    // Initialize filter checkbox label states
+    initializeFilterCheckboxStates();
+    
+    // Initialize Part of Speech dropdown state
+    if (!posCheckbox.checked) {
+        addAnyOption(posSelect);
+    }
+}
+
+// Handle filter checkbox changes (mutually exclusive)
+function handleFilterCheckboxChange(e) {
+    const checkedCheckbox = e.target;
+    const allCheckboxes = [lengthCheckbox, vowelsCheckbox, consonantsCheckbox, posCheckbox, doubleLettersCheckbox, noRepeatsCheckbox, alternatingCheckbox, alphabeticalCheckbox];
+    
+    // Get all checkbox labels
+    const allLabels = [
+        lengthCheckbox.parentElement,
+        vowelsCheckbox.parentElement,
+        consonantsCheckbox.parentElement,
+        posCheckbox.parentElement,
+        doubleLettersCheckbox.parentElement,
+        noRepeatsCheckbox.parentElement,
+        alternatingCheckbox.parentElement,
+        alphabeticalCheckbox.parentElement
+    ];
+    
+    if (checkedCheckbox.checked) {
+        // Uncheck all other checkboxes and reset their labels
+        allCheckboxes.forEach((checkbox, index) => {
+            if (checkbox !== checkedCheckbox) {
+                checkbox.checked = false;
+                allLabels[index].classList.remove('checked');
+                allLabels[index].classList.add('disabled');
+            }
+        });
+        
+        // Reset inputs to defaults when switching between rule types
+        if (checkedCheckbox === lengthCheckbox) {
+            lengthInput.value = '';
+            lengthInput.disabled = false;
+            lengthInput.classList.remove('disabled');
+        } else if (checkedCheckbox === vowelsCheckbox) {
+            vowelsInput.value = '';
+            vowelsInput.disabled = false;
+            vowelsInput.classList.remove('disabled');
+        } else if (checkedCheckbox === consonantsCheckbox) {
+            consonantsInput.value = '';
+            consonantsInput.disabled = false;
+            consonantsInput.classList.remove('disabled');
+        } else if (checkedCheckbox === posCheckbox) {
+            removeAnyOption(posSelect);
+            posSelect.value = 'noun'; // Default to first real option
+            posSelect.disabled = false;
+            posSelect.classList.remove('disabled');
+        }
+        
+        // Disable and reset all input fields for unchecked checkboxes
+        if (checkedCheckbox !== lengthCheckbox) {
+            lengthInput.disabled = true;
+            lengthInput.classList.add('disabled');
+            lengthInput.value = '';
+        }
+        if (checkedCheckbox !== vowelsCheckbox) {
+            vowelsInput.disabled = true;
+            vowelsInput.classList.add('disabled');
+            vowelsInput.value = '';
+        }
+        if (checkedCheckbox !== consonantsCheckbox) {
+            consonantsInput.disabled = true;
+            consonantsInput.classList.add('disabled');
+            consonantsInput.value = '';
+        }
+        if (checkedCheckbox !== posCheckbox) {
+            posSelect.disabled = true;
+            posSelect.classList.add('disabled');
+            posSelect.value = '';
+            addAnyOption(posSelect);
+        }
+        
+        // Update label styling
+        checkedCheckbox.parentElement.classList.remove('disabled');
+        checkedCheckbox.parentElement.classList.add('checked');
+        
+    } else {
+        // If unchecking, disable the corresponding input field, reset its value, and update label
+        if (checkedCheckbox === lengthCheckbox) {
+            lengthInput.disabled = true;
+            lengthInput.classList.add('disabled');
+            lengthInput.value = '';
+        } else if (checkedCheckbox === vowelsCheckbox) {
+            vowelsInput.disabled = true;
+            vowelsInput.classList.add('disabled');
+            vowelsInput.value = '';
+        } else if (checkedCheckbox === consonantsCheckbox) {
+            consonantsInput.disabled = true;
+            consonantsInput.classList.add('disabled');
+            consonantsInput.value = '';
+        } else if (checkedCheckbox === posCheckbox) {
+            posSelect.disabled = true;
+            posSelect.classList.add('disabled');
+            posSelect.value = '';
+            addAnyOption(posSelect);
+        }
+        
+        // Update label styling
+        checkedCheckbox.parentElement.classList.remove('checked');
+        checkedCheckbox.parentElement.classList.add('disabled');
+    }
+}
+
+// Helper functions for managing Part of Speech dropdown
+function addAnyOption(selectElement) {
+    // Check if "Any" option already exists
+    if (!selectElement.querySelector('option[value=""]')) {
+        const anyOption = document.createElement('option');
+        anyOption.value = '';
+        anyOption.textContent = 'Any';
+        selectElement.insertBefore(anyOption, selectElement.firstChild);
+    }
+}
+
+function removeAnyOption(selectElement) {
+    // Remove "Any" option if it exists
+    const anyOption = selectElement.querySelector('option[value=""]');
+    if (anyOption) {
+        anyOption.remove();
+    }
+}
+
+// Initialize filter checkbox label states
+function initializeFilterCheckboxStates() {
+    const allCheckboxes = [lengthCheckbox, vowelsCheckbox, consonantsCheckbox, posCheckbox, doubleLettersCheckbox, noRepeatsCheckbox, alternatingCheckbox, alphabeticalCheckbox];
+    const allLabels = [
+        lengthCheckbox.parentElement,
+        vowelsCheckbox.parentElement,
+        consonantsCheckbox.parentElement,
+        posCheckbox.parentElement,
+        doubleLettersCheckbox.parentElement,
+        noRepeatsCheckbox.parentElement,
+        alternatingCheckbox.parentElement,
+        alphabeticalCheckbox.parentElement
+    ];
+    
+    allCheckboxes.forEach((checkbox, index) => {
+        if (checkbox.checked) {
+            allLabels[index].classList.add('checked');
+            allLabels[index].classList.remove('disabled');
+        } else {
+            allLabels[index].classList.remove('checked');
+            allLabels[index].classList.add('disabled');
+        }
+    });
 }
 
 // Main search function
@@ -306,21 +468,25 @@ function hideLoading() {
 
 // Get filter values
 function getLengthFilter() {
+    if (!lengthCheckbox.checked) return null;
     const value = lengthInput.value.trim();
     return value ? parseInt(value) : null;
 }
 
 function getVowelsFilter() {
+    if (!vowelsCheckbox.checked) return null;
     const value = vowelsInput.value.trim();
     return value ? parseInt(value) : null;
 }
 
 function getConsonantsFilter() {
+    if (!consonantsCheckbox.checked) return null;
     const value = consonantsInput.value.trim();
     return value ? parseInt(value) : null;
 }
 
 function getPosFilter() {
+    if (!posCheckbox.checked) return null;
     return posSelect.value || null;
 }
 
