@@ -1,6 +1,18 @@
 # Fluxer Web Application
 
-A modern web interface for the Fluxer word-finding tool. This web application provides the same functionality as the Python `fluxer.py` script but with a beautiful, responsive user interface.
+A modern web interface for the Fluxer word-finding and puzzle-solving tools. This web application provides the same functionality as the Python scripts (`fluxer.py` and `fluxer_solver.py`) but with beautiful, responsive user interfaces.
+
+## Pages
+
+### 1. Single Word Finder (`index.html`)
+- Find individual words with overlapping prefixes and suffixes
+- Advanced filtering options
+- Real-time results with sorting by overlap
+
+### 2. Puzzle Solver (`solver.html`)
+- Find complete 3-word solution paths for Fluxis puzzles
+- Multiple solution ranking by overlap strength
+- Progress tracking during search
 
 ## Features
 
@@ -12,10 +24,19 @@ A modern web interface for the Fluxer word-finding tool. This web application pr
 
 ## How to Use
 
-### Basic Search
-1. Enter a **preceding word** (required) - e.g., "START"
-2. Optionally enter a **following word** - e.g., "PLAY"
-3. Click "Find Words" to search
+### Single Word Finder
+1. Navigate to the Single Word Finder page
+2. Enter a **preceding word** (required) - e.g., "START"
+3. Optionally enter a **following word** - e.g., "PLAY"
+4. Apply filters as needed
+5. Click "Find Words" to search
+
+### Puzzle Solver
+1. Navigate to the Puzzle Solver page
+2. Enter a **starting word** - e.g., "START"
+3. Enter **3 rules** for the solution path - e.g., "noun", "6-letters", "double-letters"
+4. Set maximum solutions and display limits
+5. Click "Find Solutions" to search
 
 ### Advanced Filters
 - **Word Length**: Specify exact word length (e.g., 6 letters)
@@ -54,9 +75,11 @@ A modern web interface for the Fluxer word-finding tool. This web application pr
 ```
 fluxer/
 ├── web/                # Web application directory
-│   ├── index.html      # Main HTML file
-│   ├── styles.css      # CSS styles
-│   ├── script.js       # JavaScript functionality
+│   ├── index.html      # Single word finder page
+│   ├── solver.html     # Puzzle solver page
+│   ├── styles.css      # Shared CSS styles
+│   ├── script.js       # Single word finder JavaScript
+│   ├── solver.js       # Puzzle solver JavaScript
 │   ├── popular.txt     # Word list (required)
 │   ├── nouns.txt       # Pre-tagged nouns
 │   ├── verbs.txt       # Pre-tagged verbs

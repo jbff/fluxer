@@ -4,9 +4,6 @@ let nouns = [];
 let verbs = [];
 let adjectives = [];
 let adverbs = [];
-let currentResults = [];
-let currentIndex = 0;
-const RESULTS_PER_PAGE = 5;
 
 // DOM elements
 const prefixInput = document.getElementById('prefix');
@@ -26,8 +23,6 @@ const resultsSection = document.getElementById('results-section');
 const resultsContainer = document.getElementById('results-container');
 const resultsCount = document.getElementById('results-count');
 const loadingSection = document.getElementById('loading-section');
-const loadMoreContainer = document.getElementById('load-more-container');
-const loadMoreBtn = document.getElementById('load-more-btn');
 
 // Initialize the application
 async function init() {
@@ -88,7 +83,6 @@ async function loadWords() {
 // Setup event listeners
 function setupEventListeners() {
     searchBtn.addEventListener('click', performSearch);
-    loadMoreBtn.addEventListener('click', loadMoreResults);
     
     // Allow Enter key to trigger search
     [prefixInput, suffixInput, lengthInput, vowelsInput, consonantsInput].forEach(input => {
@@ -107,6 +101,22 @@ function setupEventListeners() {
     suffixInput.addEventListener('input', (e) => {
         e.target.value = e.target.value.toUpperCase();
     });
+    
+    // Handle "Show All Results" checkbox
+    noPagingCheckbox.addEventListener('change', (e) => {
+        limitInput.disabled = e.target.checked;
+        if (e.target.checked) {
+            limitInput.classList.add('disabled');
+        } else {
+            limitInput.classList.remove('disabled');
+        }
+    });
+    
+    // Initialize the disabled state based on the checkbox's initial state
+    limitInput.disabled = noPagingCheckbox.checked;
+    if (noPagingCheckbox.checked) {
+        limitInput.classList.add('disabled');
+    }
 }
 
 // Main search function
@@ -127,11 +137,8 @@ async function performSearch() {
         const filtered = filterMatches(matches, prefix, suffix);
         const sorted = sortResults(filtered);
         
-        currentResults = sorted;
-        currentIndex = 0;
-        
         hideLoading();
-        displayResults();
+        displayResults(sorted);
     }, 100);
 }
 
@@ -253,8 +260,8 @@ function sortResults(results) {
 }
 
 // Display results
-function displayResults() {
-    if (currentResults.length === 0) {
+function displayResults(results) {
+    if (results.length === 0) {
         resultsSection.style.display = 'none';
         alert('No matches found with the given criteria.');
         return;
@@ -264,20 +271,10 @@ function displayResults() {
     const noPaging = noPagingCheckbox.checked;
     
     resultsSection.style.display = 'block';
-    resultsCount.textContent = `${currentResults.length} matches found`;
+    resultsCount.textContent = `${results.length} matches found`;
     
-    if (noPaging) {
-        // Show all results
-        displayAllResults(limit);
-    } else {
-        // Show paginated results
-        displayPaginatedResults();
-    }
-}
-
-// Display all results
-function displayAllResults(limit) {
-    const resultsToShow = limit ? currentResults.slice(0, limit) : currentResults;
+    // Show all results or limit based on checkbox
+    const resultsToShow = noPaging ? results : (limit ? results.slice(0, limit) : results);
     
     resultsContainer.innerHTML = resultsToShow.map(result => `
         <div class="result-item">
@@ -286,37 +283,14 @@ function displayAllResults(limit) {
         </div>
     `).join('');
     
-    loadMoreContainer.style.display = 'none';
-}
-
-// Display paginated results
-function displayPaginatedResults() {
-    const endIndex = Math.min(currentIndex + RESULTS_PER_PAGE, currentResults.length);
-    const resultsToShow = currentResults.slice(currentIndex, endIndex);
-    
-    if (currentIndex === 0) {
-        resultsContainer.innerHTML = '';
+    // Show message if results were limited
+    if (!noPaging && limit && results.length > limit) {
+        resultsContainer.innerHTML += `
+            <div style="text-align: center; color: #6b7280; font-style: italic; margin-top: 20px;">
+                Showing ${limit} of ${results.length} results. Check "Show All Results" to see all matches.
+            </div>
+        `;
     }
-    
-    resultsContainer.innerHTML += resultsToShow.map(result => `
-        <div class="result-item">
-            <span class="result-word">${result.word.toUpperCase()}</span>
-            <span class="result-overlap">overlap: ${result.overlap}</span>
-        </div>
-    `).join('');
-    
-    // Show/hide load more button
-    if (endIndex < currentResults.length) {
-        loadMoreContainer.style.display = 'block';
-    } else {
-        loadMoreContainer.style.display = 'none';
-    }
-}
-
-// Load more results
-function loadMoreResults() {
-    currentIndex += RESULTS_PER_PAGE;
-    displayPaginatedResults();
 }
 
 // Show loading state

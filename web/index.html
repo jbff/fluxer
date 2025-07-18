@@ -15,6 +15,10 @@
                 Fluxer
             </h1>
             <p class="subtitle">Find words with overlapping preceding and following words</p>
+            <nav class="nav">
+                <a href="index.html" class="nav-link active">Single Word Finder</a>
+                <a href="solver.html" class="nav-link">Puzzle Solver</a>
+            </nav>
         </header>
 
         <main class="main">
@@ -96,14 +100,14 @@
                 
                 <div class="display-controls">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="no-paging" class="checkbox" checked>
+                        <input type="checkbox" id="no-paging" class="checkbox">
                         <span class="checkmark"></span>
                         Show All Results
                     </label>
                     
                     <div class="limit-group">
                         <label for="limit" class="limit-label">Limit Results</label>
-                        <input type="number" id="limit" class="limit-input" placeholder="No limit" min="1" max="1000">
+                        <input type="number" id="limit" class="limit-input" value="20" min="1" max="1000">
                     </div>
                 </div>
             </div>
@@ -116,12 +120,6 @@
                 
                 <div class="results-container" id="results-container">
                     <!-- Results will be populated here -->
-                </div>
-                
-                <div class="load-more-container" id="load-more-container" style="display: none;">
-                    <button id="load-more-btn" class="load-more-btn">
-                        Load More Results
-                    </button>
                 </div>
             </div>
 
