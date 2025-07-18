@@ -2,9 +2,12 @@
 
 A Python script that assists with playing **Fluxis**, a word puzzle game from [The Atlantic Games](https://www.theatlantic.com/games/). The word list used was obtained from [dolph/dictionary](https://raw.githubusercontent.com/dolph/dictionary/refs/heads/master/popular.txt).
 
-This repository includes two tools:
+This repository includes several tools:
 - **`fluxer.py`**: The main script for finding individual word matches with various filters
 - **`fluxer_solver.py`**: An automated solver that finds complete 3-word solution paths for Fluxis puzzles
+- **`create_pos_lists.py`**: Script to create pre-tagged part-of-speech word lists (requires NLTK)
+- **`web/`**: Web application with the same functionality as the Python scripts
+- **Pre-tagged word lists**: `nouns.txt`, `verbs.txt`, `adjectives.txt`, `adverbs.txt` (created by `create_pos_lists.py`)
 
 The solver script uses `fluxer.py` internally and can automatically find multiple solutions when given a starting word and three rules. Solutions are ranked by total overlap strength (highest to lowest). You can also use `fluxer.py` separately to manually work through puzzles step by step.
 
@@ -39,9 +42,29 @@ Fluxis is a word puzzle game where players must find words that share overlappin
 ### Requirements
 
 - Python 3.x
-- NLTK library (`pip install nltk`; for part of speech tagging)
+- NLTK library (`pip install nltk`) - **only needed to run `create_pos_lists.py` to regenerate the pre-tagged word lists**
 
-Required NLTK data will be downloaded on first run.
+**Note**: The main scripts (`fluxer.py` and `fluxer_solver.py`) do not require NLTK. They use pre-tagged word lists for part-of-speech filtering, which provides faster performance and more accurate results.
+
+## Pre-tagged Word Lists
+
+The scripts use pre-tagged word lists for part-of-speech filtering:
+- `nouns.txt` - Words that can function as nouns
+- `verbs.txt` - Words that can function as verbs  
+- `adjectives.txt` - Words that can function as adjectives
+- `adverbs.txt` - Words that can function as adverbs
+
+These files are created by running `create_pos_lists.py`, which uses NLTK to analyze each word in multiple contexts to capture words that can function as multiple parts of speech (e.g., "plant" as both noun and verb).
+
+To regenerate these files (e.g., if you update `popular.txt`):
+```bash
+python create_pos_lists.py
+```
+
+**Note**: After regenerating the POS lists, you'll need to copy them to the `web/` directory for the web application to use them:
+```bash
+cp nouns.txt verbs.txt adjectives.txt adverbs.txt web/
+```
 
 ## Individual Word Search (fluxer.py)
 
@@ -53,7 +76,7 @@ Results are ranked by total overlap strength and displayed with color coding for
 
 Please note that the word list used probably contains words that the Fluxis game does not consider valid, so the matches output by this script are not guaranteed to be accepted by Fluxis.
 
-In addition, the NLTK POS-tagger may not be perfect because it is tagging without sentence context. Words (e.g. "plant") that depending on usage may be a verb or a noun will only be tagged with a single part of speech, which may prevent some possible solutions from being found.
+The part-of-speech tagging uses pre-tagged word lists that were created using NLTK with multiple contexts to capture words that can function as multiple parts of speech (e.g., "plant" as both noun and verb). This provides more accurate and comprehensive part-of-speech filtering than single-context tagging.
 
 ### Usage
 
@@ -157,3 +180,47 @@ Showing top 5 solutions by overlap:
 ```
 
 Solutions are ranked by total overlap strength, with the highest overlap solutions shown first.
+
+## Web Application
+
+A modern web interface is available in the `web/` directory that provides the same functionality as the Python scripts but with a beautiful, responsive user interface.
+
+### Features
+- **Preceding/Following Word Search**: Find words that overlap with given preceding and following words
+- **Advanced Filtering**: All the same filters as the Python scripts
+- **Real-time Results**: Instant search results with sorting by overlap
+- **Responsive Design**: Works on desktop, tablet, and mobile devices
+- **Modern UI**: Clean, intuitive interface with smooth animations
+
+### Usage
+1. Navigate to the `web/` directory
+2. Start a local web server: `python3 -m http.server 8000`
+3. Open your browser to `http://localhost:8000`
+
+For detailed web application documentation, see `web/README_WEB.md`.
+
+## Complete File Structure
+
+```
+fluxer/
+├── fluxer.py              # Main Python script (no NLTK needed)
+├── fluxer_solver.py       # Solver script (no NLTK needed)
+├── create_pos_lists.py    # POS tagging script (requires NLTK)
+├── popular.txt            # Main word list
+├── nouns.txt              # Pre-tagged nouns
+├── verbs.txt              # Pre-tagged verbs
+├── adjectives.txt         # Pre-tagged adjectives
+├── adverbs.txt            # Pre-tagged adverbs
+├── README.md              # Main documentation
+├── .gitignore             # Git ignore file
+└── web/                   # Web application
+    ├── index.html         # Main HTML file
+    ├── styles.css         # CSS styles
+    ├── script.js          # JavaScript functionality
+    ├── popular.txt        # Word list (copy)
+    ├── nouns.txt          # Pre-tagged nouns (copy)
+    ├── verbs.txt          # Pre-tagged verbs (copy)
+    ├── adjectives.txt     # Pre-tagged adjectives (copy)
+    ├── adverbs.txt        # Pre-tagged adverbs (copy)
+    └── README_WEB.md      # Web app documentation
+```

@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 
-import nltk
 import argparse
 import sys
 import time
 
 words = []
+nouns = []
+verbs = []
+adjectives = []
+adverbs = []
 corpus = "popular.txt"
 
 def find_matches(prefix, suffix=None, length=None):
@@ -35,8 +38,9 @@ def find_matches(prefix, suffix=None, length=None):
     return sorted(results)
 
 def ensure_words_corpus():
-    global words
+    global words, nouns, verbs, adjectives, adverbs
 
+    # Load main word list
     try:
         with open(corpus) as f:
             words = [line.strip() for line in f]
@@ -44,10 +48,34 @@ def ensure_words_corpus():
         print(f"Error: Word list {corpus} was not found.")
         sys.exit(1)
 
+    # Load POS-specific lists
     try:
-        nltk.data.find('taggers/averaged_perceptron_tagger_eng')
-    except LookupError:
-        nltk.download('averaged_perceptron_tagger_eng')
+        with open("nouns.txt") as f:
+            nouns = [line.strip().lower() for line in f if line.strip()]
+    except FileNotFoundError:
+        print("Warning: nouns.txt not found. Part-of-speech filtering will not work.")
+        nouns = []
+
+    try:
+        with open("verbs.txt") as f:
+            verbs = [line.strip().lower() for line in f if line.strip()]
+    except FileNotFoundError:
+        print("Warning: verbs.txt not found. Part-of-speech filtering will not work.")
+        verbs = []
+
+    try:
+        with open("adjectives.txt") as f:
+            adjectives = [line.strip().lower() for line in f if line.strip()]
+    except FileNotFoundError:
+        print("Warning: adjectives.txt not found. Part-of-speech filtering will not work.")
+        adjectives = []
+
+    try:
+        with open("adverbs.txt") as f:
+            adverbs = [line.strip().lower() for line in f if line.strip()]
+    except FileNotFoundError:
+        print("Warning: adverbs.txt not found. Part-of-speech filtering will not work.")
+        adverbs = []
 
 def supports_color():
     return sys.stdout.isatty()
@@ -97,7 +125,7 @@ def main():
             continue
         if args.consonants is not None and count_consonants(w) != args.consonants:
             continue
-        if args.pos is not None and get_part_of_speech(w) != args.pos.lower():
+        if args.pos is not None and not is_word_in_pos_category(w, args.pos.lower()):
             continue
         if args.double_letters and not has_double_letters(w):
             continue
@@ -174,24 +202,21 @@ def has_repeated_letters(word):
         seen_letters.add(letter)
     return False
 
-# Utility: Get part of speech (POS) using nltk
+# Utility: Check if a word is in a specific POS category using pre-tagged lists
 
-def get_part_of_speech(word):
-    # Returns the most probable POS tag for the word (noun, verb, adj, etc.)
-    from nltk import pos_tag
-    tagged = pos_tag([word])
-    tag = tagged[0][1]
-    # Map Penn Treebank tags to simple POS
-    if tag.startswith('N'):
-        return 'noun'
-    elif tag.startswith('V'):
-        return 'verb'
-    elif tag.startswith('J'):
-        return 'adjective'
-    elif tag.startswith('R'):
-        return 'adverb'
+def is_word_in_pos_category(word, pos):
+    word_lower = word.lower()
+    
+    if pos == 'noun':
+        return word_lower in nouns
+    elif pos == 'verb':
+        return word_lower in verbs
+    elif pos == 'adjective':
+        return word_lower in adjectives
+    elif pos == 'adverb':
+        return word_lower in adverbs
     else:
-        return 'other'
+        return False
 
 # Utility: Count vowels in a word
 

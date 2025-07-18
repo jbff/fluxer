@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxer - Word Finder</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1 class="title">
+                <span class="title-icon">🔤</span>
+                Fluxer
+            </h1>
+            <p class="subtitle">Find words with overlapping preceding and following words</p>
+        </header>
+
+        <main class="main">
+            <div class="search-section">
+                <div class="input-group">
+                    <label for="prefix" class="label">Preceding Word</label>
+                    <input type="text" id="prefix" class="input" placeholder="Enter preceding word (e.g., START)" required>
+                </div>
+                
+                <div class="input-group">
+                    <label for="suffix" class="label">Following Word (Optional)</label>
+                    <input type="text" id="suffix" class="input" placeholder="Enter following word (e.g., PLAY)">
+                </div>
+            </div>
+
+            <div class="filters-section">
+                <h3 class="filters-title">Filters</h3>
+                
+                <div class="filters-grid">
+                    <div class="filter-group">
+                        <label for="length" class="filter-label">Word Length</label>
+                        <input type="number" id="length" class="filter-input" placeholder="Any length" min="1" max="20">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="vowels" class="filter-label">Vowels</label>
+                        <input type="number" id="vowels" class="filter-input" placeholder="Any" min="0" max="10">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="consonants" class="filter-label">Consonants</label>
+                        <input type="number" id="consonants" class="filter-input" placeholder="Any" min="0" max="20">
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="pos" class="filter-label">Part of Speech</label>
+                        <select id="pos" class="filter-select">
+                            <option value="">Any</option>
+                            <option value="noun">Noun</option>
+                            <option value="verb">Verb</option>
+                            <option value="adjective">Adjective</option>
+                            <option value="adverb">Adverb</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="checkbox-filters">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="double-letters" class="checkbox">
+                        <span class="checkmark"></span>
+                        Double Letters
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="no-repeats" class="checkbox">
+                        <span class="checkmark"></span>
+                        No Repeated Letters
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="alternating" class="checkbox">
+                        <span class="checkmark"></span>
+                        Alternating Pattern
+                    </label>
+
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="alphabetical" class="checkbox">
+                        <span class="checkmark"></span>
+                        Alphabetical Order
+                    </label>
+                </div>
+            </div>
+
+            <div class="controls-section">
+                <button id="search-btn" class="search-btn">
+                    <span class="btn-icon">🔍</span>
+                    Find Words
+                </button>
+                
+                <div class="display-controls">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="no-paging" class="checkbox" checked>
+                        <span class="checkmark"></span>
+                        Show All Results
+                    </label>
+                    
+                    <div class="limit-group">
+                        <label for="limit" class="limit-label">Limit Results</label>
+                        <input type="number" id="limit" class="limit-input" placeholder="No limit" min="1" max="1000">
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section" id="results-section" style="display: none;">
+                <div class="results-header">
+                    <h3 class="results-title">Results</h3>
+                    <div class="results-count" id="results-count"></div>
+                </div>
+                
+                <div class="results-container" id="results-container">
+                    <!-- Results will be populated here -->
+                </div>
+                
+                <div class="load-more-container" id="load-more-container" style="display: none;">
+                    <button id="load-more-btn" class="load-more-btn">
+                        Load More Results
+                    </button>
+                </div>
+            </div>
+
+            <div class="loading-section" id="loading-section" style="display: none;">
+                <div class="loading-spinner"></div>
+                <p class="loading-text">Finding matches...</p>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

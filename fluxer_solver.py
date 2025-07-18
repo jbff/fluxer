@@ -109,7 +109,7 @@ def apply_filters(word: str, filters: Dict[str, Any], fluxer) -> bool:
         return False
     
     # Part of speech filter
-    if 'pos' in filters and fluxer.get_part_of_speech(word) != filters['pos']:
+    if 'pos' in filters and not fluxer.is_word_in_pos_category(word, filters['pos']):
         return False
     
     # Double letters filter
