@@ -191,11 +191,13 @@ A modern web interface is available in the `web/` directory that provides the sa
 - **Real-time Results**: Instant search results with sorting by overlap
 - **Responsive Design**: Works on desktop, tablet, and mobile devices
 - **Modern UI**: Clean, intuitive interface with smooth animations
+- **Two Pages**: Single Word Finder and Puzzle Solver with form-based rule configuration
 
 ### Usage
 1. Navigate to the `web/` directory
 2. Start a local web server: `python3 -m http.server 8000`
 3. Open your browser to `http://localhost:8000`
+4. Use the navigation to switch between Single Word Finder and Puzzle Solver pages
 
 For detailed web application documentation, see `web/README_WEB.md`.
 

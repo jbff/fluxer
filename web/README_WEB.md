@@ -34,9 +34,13 @@ A modern web interface for the Fluxer word-finding and puzzle-solving tools. Thi
 ### Puzzle Solver
 1. Navigate to the Puzzle Solver page
 2. Enter a **starting word** - e.g., "START"
-3. Enter **3 rules** for the solution path - e.g., "noun", "6-letters", "double-letters"
-4. Set maximum solutions and display limits
-5. Click "Find Solutions" to search
+3. Configure **3 rules** using the form-based interface:
+   - **Rule 1**: Set criteria for the first word in the solution path
+   - **Rule 2**: Set criteria for the second word in the solution path  
+   - **Rule 3**: Set criteria for the third word in the solution path
+4. Each rule can specify: word length, vowels, consonants, part of speech, and pattern filters
+5. Set maximum solutions and display limits
+6. Click "Find Solutions" to search
 
 ### Advanced Filters
 - **Word Length**: Specify exact word length (e.g., 6 letters)
@@ -49,9 +53,9 @@ A modern web interface for the Fluxer word-finding and puzzle-solving tools. Thi
   - **Alphabetical Order**: Words with letters in alphabetical order
 
 ### Display Options
-- **Show All Results**: Display all matches at once
-- **Limit Results**: Set maximum number of results to show
-- **Pagination**: View results in pages of 5 (when "Show All Results" is unchecked)
+- **Show All Results**: Display all matches at once (unchecked by default)
+- **Limit Results**: Set maximum number of results to show (default: 20)
+- **Note**: When "Show All Results" is checked, the Limit Results field is disabled
 
 ## Examples
 
@@ -111,14 +115,14 @@ fluxer/
 - The application loads the word list from `popular.txt` on startup
 - All processing is done client-side using JavaScript
 - No server required - works as a static web application
-- Part of speech detection is simplified; for more accuracy, consider integrating a proper NLP library
+- Part of speech detection uses pre-tagged word lists for accuracy and performance
 
 ## Differences from Python Version
 
-- **Part of Speech**: Uses a simplified dictionary-based approach instead of NLTK
+- **Part of Speech**: Uses the same pre-tagged word lists as the Python scripts
 - **Performance**: Optimized for web browsers with efficient JavaScript algorithms
 - **UI**: Modern web interface instead of command-line output
-- **Pagination**: Built-in pagination for better user experience
+- **Display**: Simplified display options (Show All vs Limit) without pagination
 
 ## Troubleshooting
 
