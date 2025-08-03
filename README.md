@@ -201,30 +201,5 @@ A modern web interface is available in the `web/` directory that provides the sa
 3. Open your browser to `http://localhost:8000`
 4. Use the navigation to switch between Single Word Finder and Puzzle Solver pages
 
-For detailed web application documentation, see `web/README_WEB.md`.
+For detailed web application documentation, see `web/README.md`.
 
-## Complete File Structure
-
-```
-fluxer/
-├── fluxer.py              # Main Python script (no NLTK needed)
-├── fluxer_solver.py       # Solver script (no NLTK needed)
-├── create_pos_lists.py    # POS tagging script (requires NLTK)
-├── popular.txt            # Main word list
-├── nouns.txt              # Pre-tagged nouns
-├── verbs.txt              # Pre-tagged verbs
-├── adjectives.txt         # Pre-tagged adjectives
-├── adverbs.txt            # Pre-tagged adverbs
-├── README.md              # Main documentation
-├── .gitignore             # Git ignore file
-└── web/                   # Web application
-    ├── index.html         # Main HTML file
-    ├── styles.css         # CSS styles
-    ├── script.js          # JavaScript functionality
-    ├── popular.txt        # Word list (copy)
-    ├── nouns.txt          # Pre-tagged nouns (copy)
-    ├── verbs.txt          # Pre-tagged verbs (copy)
-    ├── adjectives.txt     # Pre-tagged adjectives (copy)
-    ├── adverbs.txt        # Pre-tagged adverbs (copy)
-    └── README_WEB.md      # Web app documentation
-```
