@@ -452,7 +452,6 @@ furious
 furtive
 futuristic
 galactic
-geese
 general
 generous
 genetic
@@ -673,7 +672,6 @@ legendary
 legislative
 lesbian
 lest
-leveraged
 liable
 liberal
 librarian

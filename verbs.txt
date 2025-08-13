@@ -2135,6 +2135,7 @@ let
 lettering
 letting
 levelheaded
+leveraged
 liberated
 liberating
 licensed
