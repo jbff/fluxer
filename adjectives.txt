@@ -549,6 +549,7 @@ impractical
 impressed
 impressionable
 impressive
+improper
 improvised
 impulsive
 inaccessible
@@ -961,6 +962,7 @@ productive
 professional
 profitable
 promiscuous
+proper
 prophylactic
 proprietary
 prosecutorial

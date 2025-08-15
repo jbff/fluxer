@@ -8522,7 +8522,6 @@ impressions
 imprint
 imprisonment
 impromptu
-improper
 impropriety
 improvement
 improvements
@@ -12930,7 +12929,6 @@ propaganda
 propane
 propellers
 propensity
-proper
 properties
 property
 prophecies
