@@ -14498,6 +14498,7 @@ scourge
 scout
 scouts
 scow
+scrabble
 scram
 scrambler
 scrap

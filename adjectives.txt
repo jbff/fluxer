@@ -1057,10 +1057,7 @@ satisfied
 scan
 scary
 scientific
-scrabble
-scramble
 scrappy
-scribble
 seasonal
 second
 secondary
